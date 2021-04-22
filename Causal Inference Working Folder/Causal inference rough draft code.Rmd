@@ -8,6 +8,67 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
+
+
+
+## **Introduction**
+
+
+  In this project we are looking at the impact of prison expansion on teenage pregnancy and live birth rate. Specifically , we are focusing on Texas state prison expansion during 1993 and early 2000 implemented by governor Ann Richards that tripled the size of the states prison system. Texas sudden prison boom had a major  consequence – state’s prison population more than doubled in five years. It would be reasonable to assume that since many young men, especially young black men  were incarcerated, teen fertility would drop due to imbalance in sex ratio. The goal of this paper is to determine if there is a causal relationship between the spike of incarceration rate among juveniles and teen pregnancy and live birth rate. We would expect this relationship to be negative, in order to evaluate this we are using synthetic controls on CDC data set linked on github. The advantage of using SCM is it looks like the treated case in key metrics in terms of the prior covariates and other post outcome predictors, thus it gives us apples to apples comparison. 
+
+
+
+
+
+## **Background**
+
+
+We demonstrate SCM using data from CDC that contains birth rate for teenagers from 1970-2000 to study effect of 1990 prison expansion and increase in juvenile incarceration rate on teenage pregnancy and live birth. States that have similar prior birth rates from 1970-1990 are used to construct *a synthetic Texas state* before the onset of the 1990 prison expansion.
+
+
+
+## **Methodology/Estimation**
+
+
+Synthetic control methods involve the construction of synthetic control units as convex combinations of multiple control units. IN order to construct synthetic control unit we need to define a vector of weights **W**, Each W then represents one particular weighted average of control units and therefore one potential synthetic control unit.
+
+
+To create the most similar synthetic control unit, the synth() function chooses the vector *W* to minimize a distance  between X1 and X0W, that is $||X_{1} − X_{0}W||$, subject to the weight constraints [$W=(w_{2},....,w_{j+1})$ vector such that $w_{j}>=0$ for j=2,...,J+1 and $w_{2}+...+w_{j+1}=1$].  $X_{1}$ is a vector fs pre intervention characteristics, similarly $X_{0}$ is a matrix that contains all the same variables **for the unaffected unit**. To sum up the theory, we are trying to make sure that synthetic  group resembles as much to the actual variable of interest as possible with given characteristics to simulate what would happen to the outcome variable without treatment.
+
+
+The V matrix is introduced to allow different weights to the variables in $X_{0}$ and $X_{1}$ depending on their predictive power on the outcome. An optimal choice of V assigns weights that minimize the mean square error of the synthetic control estimator, that is the expectation of $(Y_{1} − Y_{0}W∗)'(Y_{1} − Y_{0}W∗)$
+
+
+
+In our example we are trying to estimate **the synthetic group which is the birth rate among teenagers in Texas state if there was no intervention (expansion of prisons and increased incarceration rate)**.
+our observed outcome is $TeenBirth^{with expansion}_{TX, 1990-2000}$, our synthetic group is $TeenBirth^{WITHOUT expansion}_{TX}$ and we want to estimate the difference between the 2 variable above. If out synthetic group fits very well the data of TeenBIrth pre intervention than it is a good estimate to use for evaluating the difference between observed outcome from 1990-2000 and synthetic group from 1990-2000. If the synthetic does not fit the pre intervention data on teen birth properly, synthetic control shouldnot be used since it will be biased.
+
+
+
+
+
+## **Inference**
+
+
+Abadie et al. (2010) describe how synthetic control methods facilitate inferential techniques akin to permutation tests-so-called placebo studies - that is, he iteratively applies the synthetic method to each state in the "donor pool" and obtains a distribution of placebo effects. Subsequently, we can compare the set of placebo effects to the effect that was estimated for the time and unit where the intervention actually occurred. This comparison is informative about the rarity of the magnitude of the treatment effect that was observed for the exposed unit.The downside of SCM is that it only considers one treated unit, requires smooth outcomes, and the inference is less formal (many economists and data scientists are working on this).
+
+
+Some applications of synthetic controls we will be referring to in our project are "The economic impact of the 1990 German unification in West Germany", "Synthetic Control Methods for Comparative Case Studies: Estimating the Effect of California’s Tobacco Control Program" and "The Economic Costs of Conflict: A Case Study of the Basque Country" by Alberto Abadie et al.
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r mixtape SC walkthrough, error=FALSE, message=FALSE, echo=FALSE, warning=FALSE}
 # synth 1 
 library(tidyverse)
